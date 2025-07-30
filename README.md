@@ -39,6 +39,7 @@
 1. Use CMake to build the project on Windows. Everything required should already be included in the project, so you can build and run it directly.
 2. **Note: **Before running the project, make sure to double-click the `.bat` file in the `Shader/Vulkan` directory to compile the shaders.
 3. The seven model files are all included in the project's *Models* folder, and no relocation is necessary.
+4. PCB3D is no longer open source on GitHub; it is now provided only as a library file and linked as such. The project can only be run in **release** mode.
 
 ### Preview
 

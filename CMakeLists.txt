@@ -29,5 +29,4 @@ deps/glad/src
 )
 
 add_subdirectory(src)
-add_subdirectory(PCB3D)
 add_subdirectory(Graffiti)
