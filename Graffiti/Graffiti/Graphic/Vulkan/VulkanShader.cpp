@@ -174,9 +174,8 @@ namespace Graffiti {
 		std::string enginePath = filepath;
 		std::ifstream file{ enginePath, std::ios::ate | std::ios::binary };
 
-		if (!file.is_open()) {
-			throw std::runtime_error("failed to open file: " + enginePath);
-		}
+        GF_CORE_ASSERT(file.is_open(),"Can't open ShaderFile!!! \n  Please run compile.bat File in Shaders/Vulkan!!! (Double click .bat)");
+
 
 		size_t fileSize = static_cast<size_t>(file.tellg());
 		std::vector<char> buffer(fileSize);
