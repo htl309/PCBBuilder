@@ -1,0 +1,81 @@
+#version 450
+#extension GL_NV_mesh_shader : require
+
+
+#extension GL_KHR_shader_subgroup_basic : require
+#extension GL_KHR_shader_subgroup_ballot : require
+#extension GL_KHR_shader_subgroup_vote : require
+
+const uint myShaderGroupSize = 32;
+
+// 输入：工作组信息
+layout(local_size_x = myShaderGroupSize) in;  // 假设每个子组有 32 个线程
+
+
+taskNV out Task
+{
+  uint      baseID;
+  uint   deltaIDs[myShaderGroupSize];
+  uint LODlevel;
+} OUT;
+
+struct Circlelet {
+	vec2 center;
+	float height[2];
+	float r[2];
+};
+uniform   mat4 u_transform;
+uniform  int u_type;
+uniform int u_letsize;
+
+layout(std140, binding = 0) uniform SceneData {
+    mat4 u_ViewProjectionMatrix;
+}scene;
+
+
+layout(std430,binding = 1) readonly buffer Lets { Circlelet lets[]; };
+
+
+// 判断点是否在裁剪空间内
+bool isInFrustum(vec4 clipSpacePos) {
+   return all(lessThanEqual( abs(clipSpacePos.xyz / clipSpacePos.w),vec3(1.0,1.0,1.0) ));
+}
+
+// 主函数
+void main() {
+    // 获取线程 ID 和 Meshlet ID
+    uint laneID = gl_LocalInvocationID.x;  // 当前线程的 ID
+    uint baseID = gl_WorkGroupID.x * 32;   // 每个工作组处理 32 个 Meshlet
+
+   uint letid = baseID + laneID;
+   if( (letid + 1) > u_letsize){
+    return;
+   }
+   Circlelet let=lets[letid];
+  
+    mat4 trs=scene.u_ViewProjectionMatrix *u_transform;
+
+   vec4 point=trs*vec4( let.center , let.height[0] , 1.0f);
+
+   bool render =isInFrustum( point);
+ 
+    uvec4 votelets = subgroupBallot(render);
+    uint  numlets  = subgroupBallotBitCount(votelets);
+    uint idxOffset  = subgroupBallotExclusiveBitCount(votelets);
+     if (render) 
+    {
+        OUT.deltaIDs[idxOffset] = laneID;
+    }
+    
+    // 在每个工作组的第一个线程更新任务计数
+    if (laneID == 0) {
+        gl_TaskCountNV = numlets;
+         OUT.baseID     = baseID;
+        vec4 point2=trs * vec4( let.center.x,let.center.y-let.r[0] , let.height[1] , 1.0f);
+        vec3 p=point.xyz/point.w -point2.xyz/point2.w ;
+        float width =p.x*p.x+p.y*p.y+p.z*p.z;
+        if(width < 0.00005) OUT.LODlevel=3;
+        else if(width >  0.023) OUT.LODlevel=1;
+        else OUT.LODlevel=2;
+    }
+}
