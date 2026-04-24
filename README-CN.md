@@ -2,7 +2,7 @@
 
 ## A Hybrid Pipeline for Large-Scale PCB Modeling (CVM2026)
 
-[![badge](https://img.shields.io/badge/GitHub-181717?style=plastic&logo=github&logoColor=white)](https://github.com/htl309/pcbbuilder ) [![Gitee](https://img.shields.io/badge/Gitee-FF3B3F?style=plastic&logo=gitee&logoColor=white)](https://gitee.com/htl309/pcbbuilder)| [Paper](https://iccvm.org/2026/files/papers/423.pdf)
+[![badge](https://img.shields.io/badge/GitHub-181717?style=plastic&logo=github&logoColor=white)](https://github.com/htl309/pcbbuilder ) [![Gitee](https://img.shields.io/badge/Gitee-FF3B3F?style=plastic&logo=gitee&logoColor=white)](https://gitee.com/htl309/pcbbuilder) | [Paper](https://iccvm.org/2026/files/papers/423.pdf)
 
 ![image-20250729231253609](picture/t4-0.png)
 
